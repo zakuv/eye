@@ -1,0 +1,70 @@
+import numpy as np
+
+# Функция под интегралом
+def f(x):
+    return np.sqrt(0.7 * x**2 + 2.3)
+
+# Метод левых прямоугольников
+def left_rectangle_integral(func, a, b, n):
+    h = (b - a) / n
+    integral = sum(func(a + i * h) for i in range(n))
+    return integral * h
+
+# Метод правых прямоугольников
+def right_rectangle_integral(func, a, b, n):
+    h = (b - a) / n
+    integral = sum(func(a + (i + 1) * h) for i in range(n))
+    return integral * h
+
+# Метод средних прямоугольников
+def middle_rectangle_integral(func, a, b, n):
+    h = (b - a) / n
+    integral = sum(func(a + (i + 0.5) * h) for i in range(n))
+    return integral * h
+
+# Метод трапеций
+def trapezoidal_integral(func, a, b, n):
+    h = (b - a) / n
+    integral = (func(a) + func(b)) / 2 + sum(func(a + i * h) for i in range(1, n))
+    return integral * h
+
+# Метод Симпсона
+def simpson_integral(func, a, b, n):
+    if n % 2:
+        raise ValueError("n должно быть четным числом")
+    h = (b - a) / n
+    integral = (func(a) + func(b) + 4 * sum(func(a + (i + 1) * h) for i in range(n) if i % 2 == 0) + 2 * sum(func(a + i * h) for i in range(1, n) if i % 2 != 0))
+    return integral * h / 3
+
+# Метод Монте-Карло
+def monte_carlo_integral(func, a, b, n):
+    x_random = np.random.uniform(a, b, n)
+    y_random = func(x_random)
+    integral = (b - a) * np.mean(y_random)
+    return integral
+
+# Параметры интеграла
+a, b = 0.5, 1.9  # Пределы интегрирования
+n_rect = 10  # Число разбиений для прямоугольников и трапеций
+n_simpson = 10  # Число разбиений для Симпсона (должно быть четным)
+
+# Рассчитать интегралы
+left_rect_result = left_rectangle_integral(f, a, b, n_rect)
+right_rect_result = right_rectangle_integral(f, a, b, n_rect)
+middle_rect_result_n1 = middle_rectangle_integral(f, a, b, n_rect)
+middle_rect_result_n2 = middle_rectangle_integral(f, a, b, n_rect + 5)  # n2=n_rect+5 для примера
+trapezoidal_result = trapezoidal_integral(f, a, b, n_rect)
+simpson_result = simpson_integral(f, a, b, n_simpson)
+
+# Вывести результаты
+print(f"Левые прямоугольники (n={n_rect}): {left_rect_result}")
+print(f"Правые прямоугольники (n={n_rect}): {right_rect_result}")
+print(f"Средние прямоугольники (n1={n_rect}): {middle_rect_result_n1}")
+print(f"Средние прямоугольники (n2={n_rect+5}): {middle_rect_result_n2}")
+print(f"Трапеции (n={n_rect}): {trapezoidal_result}")
+print(f"Симпсон (n={n_simpson}): {simpson_result}")
+
+# Рассчитать интеграл методом Монте-Карло для разного числа точек
+for n_mc in [20, 700, 200]:
+    mc_result = monte_carlo_integral(f, a, b, n_mc)
+    print(f"Монте-Карло (n={n_mc}): {mc_result}")
